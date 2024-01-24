@@ -1,8 +1,8 @@
 package Store;
 
 public interface IStore {
-    public void save();
-    public void get();
+    public void save(String email, String username, String password);
+    public String get(String username);
 
-    public void delete();
+    public void delete(String username);
 }

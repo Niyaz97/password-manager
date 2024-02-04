@@ -6,14 +6,6 @@ import java.io.FileWriter;
 
 public class PasswordManager {
     public static void main(String[] args) {
-        //TODO: ASK Website name
-        //TODO: ASK LOGIN
-        //TODO: ASK Password
-        // Use FileWriter lib to save to file
-        // Ask user for an action
-        // If create password - ask for email, user, password and then save to file
-        // If get password - output file
-        // If delete password - delete info from file
         IStore store = new FileStore();
 
         Scanner scanner = new Scanner(System.in);
@@ -42,9 +34,8 @@ public class PasswordManager {
             String username = scanner.nextLine();
 
             store.delete(username);
-            System.out.println("Password deleted successfully.");
         } else {
-            System.out.println("Invalid command.");
+            System.out.println("Invalid command");
         }
         scanner.close();
 

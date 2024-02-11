@@ -8,7 +8,7 @@ public class DBStore implements IStore {
     }
 
     @Override
-    public String get(String username) {
+    public String getPassword(String username) {
 
         return username;
     }

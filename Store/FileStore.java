@@ -1,49 +1,44 @@
 package Store;
 
-import java.util.Scanner;
+import java.nio.charset.StandardCharsets;
 import java.io.*;
 import java.util.*;
 import java.nio.file.*;
+import Exception.*;
 
 public class FileStore implements IStore {
 
     @Override
     public void save(String email, String username, String password) {
         try (FileWriter fileWriter = new FileWriter("passwords.txt", true)) {
-            fileWriter.write(email + ";" + username + ";" + password + ";\n");
+            String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+            fileWriter.write(email + ";" + username + ";" + encodedPassword + ";\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public String get(String username) {
-        String password = null;
+    public String getPassword(String username) throws PasswordNotFoundException {
         try (BufferedReader reader = new BufferedReader(new FileReader("passwords.txt"))) {
             String line;
-
 
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(";");
                 if (parts.length >= 3 && (parts[1].equals(username))) {
-                    password = parts[2];
-                    break;
+                    byte[] decodedPassword = Base64.getDecoder().decode(parts[2]);
+                    return new String(decodedPassword, StandardCharsets.UTF_8);
                 }
-            }
-            if (password != null) {
-                System.out.println("Password for user " + username + " found");
-            } else {
-                System.out.println("User " + username + " not found");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return password;
+        throw new PasswordNotFoundException("Password not found");
     }
 
     @Override
-    public void delete(String username) {
+    public void delete(String username) throws UserNotFoundException {
         Path path = Paths.get("passwords.txt");
         List<String> fileContent = new ArrayList<>();
         boolean isDeleted = false;
@@ -65,12 +60,10 @@ public class FileStore implements IStore {
             if (isDeleted) {
                 Files.write(path, fileContent);
                 System.out.println("User " + username + " deleted");
-            } else {
-                System.out.println("User " + username + " not found");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        throw new UserNotFoundException("User " + username + " not found");
     }
 }
